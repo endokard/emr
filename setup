@@ -1,0 +1,30 @@
+#Tested on almalinux 9
+
+#Initial config
+sudo dnf update -y
+dnf install postgresql-server 
+systemctl enable postgresql
+systemctl start postgresql
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=postgresql
+firewall-cmd --reload
+
+#Create database and user
+sudo su - postgres
+psql -c "CREATE DATABASE mydatabase;"
+psql -c "CREATE USER myuser WITH PASSWORD 'another_strong_password';"
+psql -c "GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;"
+exit
+
+#Postgres access config
+vi /var/lib/pgsql/data/pg_hba.conf
+#like in firewall, untill first matched
+#(Local | Host) _ database_name (can be all) _ User (can be all) _ CIDR-Address _ Method
+#trust - no password, password and md5 (password less safe), reject - just reject, ident - if its about CLI only
+
+#Install pgadmin
+sudo dnf install https://ftp.postgresql.org/pub/pgadmin/pgadmin4/yum/pgadmin4-redhat-repo-2-1.noarch.rpm
+sudo dnf install pgadmin4-web policycoreutils-python-utils
+sudo systemctl start httpd && sudo systemctl enable httpd
+sudo /usr/pgadmin4/bin/setup-web.sh
+#access via web http://servername_or_ip/pgadmin4 
