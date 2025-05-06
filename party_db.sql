@@ -48,3 +48,15 @@ CREATE TABLE party_relationship (
     target_party_id UUID REFERENCES party(id) ON DELETE CASCADE,
     relationship_type VARCHAR(50) CHECK (relationship_type IN ('TREATS', 'EMPLOYED_BY', 'IS_RELATED_TO'))
 );
+
+#POC AI
+CREATE TABLE encounter (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    doctor_id UUID NOT NULL REFERENCES party(id) ON DELETE CASCADE,
+    patient_id UUID NOT NULL REFERENCES party(id) ON DELETE CASCADE,
+    started_at TIMESTAMP   DEFAULT now(),
+    ended_at   TIMESTAMP,
+    raw_text   TEXT,
+    summary    TEXT,
+    date_created TIMESTAMP    DEFAULT now()
+);
